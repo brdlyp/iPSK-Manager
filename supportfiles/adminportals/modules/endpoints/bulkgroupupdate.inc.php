@@ -201,6 +201,11 @@
 	$("#returnToEndpoints").click(function(){
 		event.preventDefault();
 		
+		// Clear selections
+		if (typeof selectedEndpoints !== 'undefined') {
+			selectedEndpoints = {};
+		}
+		
 		const modal = bootstrap.Modal.getInstance(document.getElementById('bulkGroupUpdateResults'));
 		modal.hide();
 		
@@ -223,6 +228,11 @@
 	
 	// Auto-refresh the endpoints view when modal is closed
 	$('#bulkGroupUpdateResults').on('hidden.bs.modal', function (e) {
+		// Clear selections
+		if (typeof selectedEndpoints !== 'undefined') {
+			selectedEndpoints = {};
+		}
+		
 		$.ajax({
 			url: "ajax/getmodule.php",
 			

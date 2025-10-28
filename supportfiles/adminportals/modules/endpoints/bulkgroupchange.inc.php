@@ -125,27 +125,47 @@
 	
 	// Populate selected endpoints list
 	function populateSelectedEndpoints() {
-		var selectedEndpoints = [];
-		$('.endpoint-checkbox:checked').each(function() {
-			selectedEndpoints.push({
-				id: $(this).data('id'),
-				mac: $(this).data('mac')
-			});
-		});
+		var selectedEndpointsList = [];
+		var selectedIds = [];
 		
-		$('#totalSelected').text(selectedEndpoints.length);
+		// Access the persistent selectedEndpoints object from the parent scope
+		if (typeof selectedEndpoints !== 'undefined' && selectedEndpoints) {
+			selectedIds = Object.keys(selectedEndpoints);
+			
+			// Get MAC addresses for selected endpoints
+			$('.endpoint-checkbox').each(function() {
+				var id = String($(this).data('id'));
+				if (selectedEndpoints[id]) {
+					selectedEndpointsList.push({
+						id: id,
+						mac: $(this).data('mac')
+					});
+				}
+			});
+		} else {
+			// Fallback: Get currently checked checkboxes
+			$('.endpoint-checkbox:checked').each(function() {
+				var id = String($(this).data('id'));
+				selectedEndpointsList.push({
+					id: id,
+					mac: $(this).data('mac')
+				});
+				selectedIds.push(id);
+			});
+		}
+		
+		$('#totalSelected').text(selectedIds.length);
 		$('#endpointsListItems').empty();
 		
-		selectedEndpoints.forEach(function(endpoint) {
+		selectedEndpointsList.forEach(function(endpoint) {
 			$('#endpointsListItems').append('<li>' + endpoint.mac + '</li>');
 		});
 		
 		// Store the IDs as a comma-separated string
-		var ids = selectedEndpoints.map(function(ep) { return ep.id; }).join(',');
-		$('#selectedEndpointIds').val(ids);
+		$('#selectedEndpointIds').val(selectedIds.join(','));
 		
 		// Enable the update button if endpoints are selected and a group is chosen
-		if (selectedEndpoints.length > 0 && $('#associationGroup').val()) {
+		if (selectedIds.length > 0 && $('#associationGroup').val()) {
 			$('#bulkgroupupdate').removeAttr('disabled');
 		}
 	}

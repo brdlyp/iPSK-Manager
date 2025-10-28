@@ -17,15 +17,18 @@ This feature allows administrators to select multiple endpoints from the "Manage
 ### 2. `/supportfiles/adminportals/modules/endpoints/endpoints.inc.php`
 **Changes:**
 - Added checkbox column to the endpoints table for selecting multiple endpoints
-- Added "Select All" checkbox in the table header
+- Added "Select All" checkbox in the table header (no filter input field in checkbox column)
 - Added "Bulk Group Change" button (initially hidden, shows when endpoints are selected)
 - Added badge showing count of selected endpoints
 - Implemented JavaScript handlers for:
-  - Individual checkbox selection
+  - Individual checkbox selection with persistent storage
   - Select All functionality
   - Showing/hiding bulk action button based on selection
   - Updating selected count badge
+  - **Persistent selection across pagination** - selections are maintained when moving between pages
+  - Automatic restoration of checkbox states after table redraws (sort, filter, pagination)
 - Updated DataTables column definitions to accommodate the new checkbox column
+- Added `drawCallback` to restore checkbox states after table operations
 
 ### 3. `/supportfiles/adminportals/modules/endpoints/bulkgroupchange.inc.php` (NEW)
 **Purpose:** Modal dialog for bulk endpoint group changes
@@ -33,7 +36,8 @@ This feature allows administrators to select multiple endpoints from the "Manage
 **Features:**
 - Displays a dropdown of available endpoint groups
 - Shows endpoint group details (maximum access duration, PSK type)
-- Lists all selected endpoints with their MAC addresses
+- Lists all selected endpoints with their MAC addresses (from persistent storage)
+- Shows total count of selected endpoints across all pages
 - Shows warning about the implications of the bulk change
 - Includes confirmation dialog before proceeding
 - Validates that an endpoint group is selected
@@ -58,6 +62,7 @@ This feature allows administrators to select multiple endpoints from the "Manage
   - Detailed per-endpoint results table
   - Color-coded status indicators
 - Automatically refreshes the endpoints view after completion
+- Clears selections after successful bulk update
 - Comprehensive logging for audit trail
 
 ## How to Use
@@ -66,7 +71,8 @@ This feature allows administrators to select multiple endpoints from the "Manage
 1. Navigate to the "Managed iPSK Endpoints" view
 2. Check the checkbox next to each endpoint you want to update
    - OR use the "Select All" checkbox in the header to select all visible endpoints
-3. A badge will show the number of selected endpoints
+   - **Selections persist across pages** - you can navigate through pagination and select endpoints on different pages
+3. A badge will show the total number of selected endpoints (across all pages)
 4. The "Bulk Group Change" button will appear
 
 ### Step 2: Initiate Bulk Change

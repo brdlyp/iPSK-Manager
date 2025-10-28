@@ -98,25 +98,58 @@
 		feather.replace()
 	});
 	
+	// Store selected endpoint IDs across pagination
+	var selectedEndpoints = {};
+	
 	// Handle Select All checkbox
 	$("#selectAll").on('click', function() {
 		var isChecked = $(this).prop('checked');
-		$('.endpoint-checkbox').prop('checked', isChecked);
+		$('.endpoint-checkbox:visible').each(function() {
+			var endpointId = $(this).data('id');
+			$(this).prop('checked', isChecked);
+			if (isChecked) {
+				selectedEndpoints[endpointId] = true;
+			} else {
+				delete selectedEndpoints[endpointId];
+			}
+		});
 		updateBulkActionButton();
 	});
 	
 	// Handle individual checkbox changes
 	$(document).on('change', '.endpoint-checkbox', function() {
+		var endpointId = $(this).data('id');
+		if ($(this).prop('checked')) {
+			selectedEndpoints[endpointId] = true;
+		} else {
+			delete selectedEndpoints[endpointId];
+		}
 		updateBulkActionButton();
-		// Update Select All checkbox state
-		var totalCheckboxes = $('.endpoint-checkbox').length;
-		var checkedCheckboxes = $('.endpoint-checkbox:checked').length;
-		$('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+		updateSelectAllState();
 	});
+	
+	// Function to update Select All checkbox state
+	function updateSelectAllState() {
+		var visibleCheckboxes = $('.endpoint-checkbox:visible').length;
+		var visibleChecked = $('.endpoint-checkbox:visible:checked').length;
+		$('#selectAll').prop('checked', visibleCheckboxes > 0 && visibleCheckboxes === visibleChecked);
+	}
+	
+	// Function to restore checkbox states after table redraw
+	function restoreCheckboxStates() {
+		$('.endpoint-checkbox').each(function() {
+			var endpointId = $(this).data('id');
+			if (selectedEndpoints[endpointId]) {
+				$(this).prop('checked', true);
+			}
+		});
+		updateSelectAllState();
+		updateBulkActionButton();
+	}
 	
 	// Function to update bulk action button visibility
 	function updateBulkActionButton() {
-		var checkedCount = $('.endpoint-checkbox:checked').length;
+		var checkedCount = Object.keys(selectedEndpoints).length;
 		if (checkedCount > 0) {
 			$('#bulkGroupChange').show();
 			$('#selectedCount').show().text(checkedCount + ' selected');
@@ -191,7 +224,7 @@
 	$(document).ready( function makeDataTable() {
 		$('#endpoint-table thead #endpoint-table-filter th').each( function (index) {
         var title = $('#endpoint-table thead #endpoint-table-header th').eq( index ).text();
-		if (/^(View|Actions)$/.test(title)) {
+		if (/^(Select|View|Actions)$/.test(title)) {
 			$(this).html('&nbsp;');
 		} else {
 			$(this).html('<input type="text" placeholder="Filter '+title+'" data-column-index="'+index+'" />');
@@ -235,6 +268,10 @@
       					$("input", $("#endpoint-table thead #endpoint-table-filter th")[i]).val(col_search_val);
     				}
   				}
+			},
+			"drawCallback": function(settings) {
+				// Restore checkbox states after table redraw (pagination, sort, filter)
+				restoreCheckboxStates();
 			}
 		});
 
