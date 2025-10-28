@@ -92,6 +92,21 @@
 	button.buttons-colvis {
     	background: #0d6efd !important;
 	}
+	
+	/* Make checkboxes bigger and easier to click */
+	#selectAll,
+	.endpoint-checkbox {
+		width: 20px;
+		height: 20px;
+		cursor: pointer;
+	}
+	
+	/* Add padding to checkbox cells for easier clicking */
+	#endpoint-table tbody td:first-child,
+	#endpoint-table thead th:first-child {
+		text-align: center;
+		padding: 12px 8px;
+	}
 </style>
 <script>
 	$(function() {	

@@ -150,7 +150,11 @@ $htmlbody = <<<HTML
 								<input type="checkbox" class="form-check-input checkbox-update" base-value="1" value="" id="fullAuthZUpdateVLANdACL">
 								<label class="form-check-label" for="fullAuthZUpdateVLANdACL">Reset <strong>ALL</strong> Associated Endpoint's VLANs and dACLs</label>
 							</div>
-							<small id="viewPermissionBlock" class="form-text text-danger fw-bold">WARNING: This will reset <strong>ALL</strong> Endpoint's Pre-Shared Keys, VLAN's, and dACL's associated to this policy!!!</small>
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input checkbox-update" base-value="1" value="" id="fullAuthZUpdateExpiration">
+								<label class="form-check-label" for="fullAuthZUpdateExpiration">Recalculate <strong>ALL</strong> Associated Endpoint's Expiration Dates</label>
+							</div>
+							<small id="viewPermissionBlock" class="form-text text-danger fw-bold">WARNING: This will reset <strong>ALL</strong> Endpoint's Pre-Shared Keys, VLAN's, dACL's, and/or Expiration Dates associated to this policy!!!</small>
 						</div>
 					</div>
 				</div>
@@ -255,6 +259,7 @@ $htmlbody = <<<HTML
 				pskType: $("#pskType").val(),
 				fullAuthZUpdate: $("#fullAuthZUpdate").val(),
 				fullAuthZUpdateVLANdACL: $("#fullAuthZUpdateVLANdACL").val(),
+				fullAuthZUpdateExpiration: $("#fullAuthZUpdateExpiration").val(),
 				vlan: $("#vlan").val(),
 				dacl: $("#dacl").val()
 			},

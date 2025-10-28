@@ -114,6 +114,22 @@ HTML;
 					}
 				}
 			}
+			if($sanitizedInput['fullAuthZUpdateExpiration'] == true){
+				$endpointsToUpdate = $ipskISEDB->getEndpointsByAuthZPolicy($sanitizedInput['id']);
+				
+				if($endpointsToUpdate){
+					// Calculate new expiration date based on template's term length
+					if($sanitizedInput['termLengthSeconds'] == 0){
+						$newExpirationDate = 0; // No expiration
+					}else{
+						$newExpirationDate = time() + $sanitizedInput['termLengthSeconds'];
+					}
+					
+					for($itemCount = 0; $itemCount < $endpointsToUpdate['count']; $itemCount++){
+						$ipskISEDB->extendEndpoint($endpointsToUpdate[$itemCount]['id'], $newExpirationDate, $_SESSION['logonSID']);
+					}
+				}
+			}
 		}
 	}
 
