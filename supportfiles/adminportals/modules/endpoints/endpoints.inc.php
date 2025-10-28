@@ -217,7 +217,7 @@
 
 		$("#endpoint-table thead #endpoint-table-filter input").on( 'keyup change', function () {
         table
-            .column( $(this).parent().parent().index()+':visible' )
+            .column( $(this).parent().index() )
             .search( this.value )
             .draw();
     	} );
