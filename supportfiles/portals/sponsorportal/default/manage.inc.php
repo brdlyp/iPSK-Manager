@@ -414,12 +414,12 @@
 	});
 
 	$(document).ready( function makeDataTable() {
-		$('#endpoint-table thead #endpoint-table-filter th').each( function () {
-        var title = $('#endpoint-table thead #endpoint-table-header th').eq( $(this).index() ).text();
+		$('#endpoint-table thead #endpoint-table-filter th').each( function (index) {
+        var title = $('#endpoint-table thead #endpoint-table-header th').eq( index ).text();
 		if (/^(View|Actions)$/.test(title)) {
 			$(this).html('&nbsp;');
 		} else {
-			$(this).html('<input type="text" placeholder="Filter '+title+'" />');
+			$(this).html('<input type="text" placeholder="Filter '+title+'" data-column-index="'+index+'" />');
 		}
     	} );
 
@@ -470,8 +470,9 @@
 		}
 
 		$("#endpoint-table thead #endpoint-table-filter input").on( 'keyup change', function () {
+		var colIndex = $(this).attr('data-column-index');
 		table
-            .column( $(this).parent().index() )
+            .column( colIndex )
             .search( this.value )
             .draw();
     	} );
