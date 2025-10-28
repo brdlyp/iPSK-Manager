@@ -16,19 +16,24 @@ This feature allows administrators to select multiple endpoints from the "Manage
 
 ### 2. `/supportfiles/adminportals/modules/endpoints/endpoints.inc.php`
 **Changes:**
-- Added checkbox column to the endpoints table for selecting multiple endpoints
+- Added checkbox column to the endpoints table for selecting multiple endpoints (increased size for easier clicking)
 - Added "Select All" checkbox in the table header (no filter input field in checkbox column)
-- Added "Bulk Group Change" button (initially hidden, shows when endpoints are selected)
+- Added "Bulk Group Change" button (always visible, disabled/enabled based on selections)
+  - Button is disabled (greyed out) when no endpoints are selected
+  - Tooltip appears on hover when disabled: "Select one or more endpoints to enable bulk group change"
+  - Button becomes enabled (green) when one or more endpoints are selected
 - Added badge showing count of selected endpoints
 - Implemented JavaScript handlers for:
   - Individual checkbox selection with persistent storage
   - Select All functionality
-  - Showing/hiding bulk action button based on selection
+  - Enabling/disabling bulk action button based on selection
   - Updating selected count badge
   - **Persistent selection across pagination** - selections are maintained when moving between pages
   - Automatic restoration of checkbox states after table redraws (sort, filter, pagination)
+  - Dynamic tooltip management (disabled when button is enabled, enabled when button is disabled)
 - Updated DataTables column definitions to accommodate the new checkbox column
 - Added `drawCallback` to restore checkbox states after table operations
+- Added custom CSS styling for disabled button state and larger checkboxes
 
 ### 3. `/supportfiles/adminportals/modules/endpoints/bulkgroupchange.inc.php` (NEW)
 **Purpose:** Modal dialog for bulk endpoint group changes
@@ -69,11 +74,14 @@ This feature allows administrators to select multiple endpoints from the "Manage
 
 ### Step 1: Select Endpoints
 1. Navigate to the "Managed iPSK Endpoints" view
-2. Check the checkbox next to each endpoint you want to update
+2. Notice the "Bulk Group Change" button is visible but greyed out (disabled)
+   - Hover over it to see the tooltip: "Select one or more endpoints to enable bulk group change"
+3. Check the checkbox next to each endpoint you want to update
    - OR use the "Select All" checkbox in the header to select all visible endpoints
    - **Selections persist across pages** - you can navigate through pagination and select endpoints on different pages
-3. A badge will show the total number of selected endpoints (across all pages)
-4. The "Bulk Group Change" button will appear
+4. As you select endpoints:
+   - A badge will show the total number of selected endpoints (across all pages)
+   - The "Bulk Group Change" button will become enabled (green)
 
 ### Step 2: Initiate Bulk Change
 1. Click the "Bulk Group Change" button
@@ -138,12 +146,15 @@ All operations are logged with:
 ## Testing Checklist
 
 ### Basic Functionality
-- [ ] Checkboxes appear in the endpoints table
+- [ ] Checkboxes appear in the endpoints table (larger size, easier to click)
 - [ ] Select All checkbox works correctly
 - [ ] Individual checkboxes can be selected/deselected
 - [ ] Selected count badge updates correctly
-- [ ] Bulk Group Change button appears when endpoints are selected
-- [ ] Bulk Group Change button hides when no endpoints are selected
+- [ ] Bulk Group Change button is always visible
+- [ ] Bulk Group Change button is disabled (greyed out) when no endpoints are selected
+- [ ] Tooltip appears when hovering over disabled button: "Select one or more endpoints to enable bulk group change"
+- [ ] Bulk Group Change button becomes enabled when endpoints are selected
+- [ ] Tooltip disappears when button is enabled
 
 ### Modal Dialog
 - [ ] Modal opens when Bulk Group Change button is clicked

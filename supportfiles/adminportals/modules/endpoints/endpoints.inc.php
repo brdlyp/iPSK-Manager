@@ -80,7 +80,7 @@
 	<div class="card-header">
 		<a id="newEndpoint" module="endpoints" sub-module="add" class="btn btn-primary custom-link text-white" href="#" role="button">Add Endpoint</a>
 		<a id="bulkEndpoint" module="endpoints" sub-module="bulk" class="btn btn-primary custom-link text-white" href="#" role="button">Add Bulk Endpoints</a>
-		<a id="bulkGroupChange" module="endpoints" sub-module="bulkgroupchange" class="btn btn-success custom-link text-white" href="#" role="button" style="display:none;">Bulk Group Change</a>
+		<a id="bulkGroupChange" module="endpoints" sub-module="bulkgroupchange" class="btn btn-success text-white disabled" href="#" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Select one or more endpoints to enable bulk group change">Bulk Group Change</a>
 		<span id="selectedCount" class="badge bg-info text-dark ms-2" style="display:none;">0 selected</span>
 	</div>
 	<div class="card-body">
@@ -107,10 +107,22 @@
 		text-align: center;
 		padding: 12px 8px;
 	}
+	
+	/* Style for disabled bulk group change button */
+	#bulkGroupChange.disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		pointer-events: auto;
+	}
 </style>
 <script>
 	$(function() {	
-		feather.replace()
+		feather.replace();
+		
+		// Initialize tooltip for bulk group change button
+		var bulkGroupChangeTooltip = new bootstrap.Tooltip($('#bulkGroupChange')[0], {
+			trigger: 'hover'
+		});
 	});
 	
 	// Store selected endpoint IDs across pagination
@@ -162,15 +174,25 @@
 		updateBulkActionButton();
 	}
 	
-	// Function to update bulk action button visibility
+	// Function to update bulk action button state
 	function updateBulkActionButton() {
 		var checkedCount = Object.keys(selectedEndpoints).length;
 		if (checkedCount > 0) {
-			$('#bulkGroupChange').show();
+			$('#bulkGroupChange').removeClass('disabled').addClass('custom-link');
 			$('#selectedCount').show().text(checkedCount + ' selected');
+			// Dispose tooltip when enabled
+			var tooltip = bootstrap.Tooltip.getInstance($('#bulkGroupChange')[0]);
+			if (tooltip) {
+				tooltip.disable();
+			}
 		} else {
-			$('#bulkGroupChange').hide();
+			$('#bulkGroupChange').addClass('disabled').removeClass('custom-link');
 			$('#selectedCount').hide();
+			// Enable tooltip when disabled
+			var tooltip = bootstrap.Tooltip.getInstance($('#bulkGroupChange')[0]);
+			if (tooltip) {
+				tooltip.enable();
+			}
 		}
 	}
 	
