@@ -112,7 +112,6 @@
 	#bulkGroupChange.disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-		pointer-events: none;
 	}
 </style>
 <script>
@@ -238,6 +237,13 @@
 	});
 	
 	$(".custom-link").click(function(event) {
+		event.preventDefault();
+		
+		// Prevent action if button is disabled
+		if($(this).hasClass('disabled')) {
+			return false;
+		}
+		
 		$.ajax({
 			url: "ajax/getmodule.php",
 			
@@ -254,8 +260,6 @@
 				$('#mainContent').html("<h6 class=\"text-center\"><span class=\"text-danger\">Error Loading Selection:</span>  Verify the installation/configuration and/or contact your system administrator!</h6>");
 			}
 		});
-		
-		event.preventDefault();
 	});
 
 	$(document).ready( function makeDataTable() {
