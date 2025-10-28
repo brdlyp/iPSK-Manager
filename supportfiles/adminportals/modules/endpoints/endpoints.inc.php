@@ -80,7 +80,7 @@
 	<div class="card-header">
 		<a id="newEndpoint" module="endpoints" sub-module="add" class="btn btn-primary custom-link text-white" href="#" role="button">Add Endpoint</a>
 		<a id="bulkEndpoint" module="endpoints" sub-module="bulk" class="btn btn-primary custom-link text-white" href="#" role="button">Add Bulk Endpoints</a>
-		<a id="bulkGroupChange" module="endpoints" sub-module="bulkgroupchange" class="btn btn-success text-white disabled" href="#" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Select one or more endpoints to enable bulk group change">Bulk Group Change</a>
+		<a id="bulkGroupChange" module="endpoints" sub-module="bulkgroupchange" class="btn btn-success custom-link text-white disabled" href="#" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Select one or more endpoints to enable bulk group change">Bulk Group Change</a>
 		<span id="selectedCount" class="badge bg-info text-dark ms-2" style="display:none;">0 selected</span>
 	</div>
 	<div class="card-body">
@@ -112,7 +112,7 @@
 	#bulkGroupChange.disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-		pointer-events: auto;
+		pointer-events: none;
 	}
 </style>
 <script>
@@ -178,15 +178,15 @@
 	function updateBulkActionButton() {
 		var checkedCount = Object.keys(selectedEndpoints).length;
 		if (checkedCount > 0) {
-			$('#bulkGroupChange').removeClass('disabled').addClass('custom-link');
+			$('#bulkGroupChange').removeClass('disabled');
 			$('#selectedCount').show().text(checkedCount + ' selected');
-			// Dispose tooltip when enabled
+			// Disable tooltip when enabled
 			var tooltip = bootstrap.Tooltip.getInstance($('#bulkGroupChange')[0]);
 			if (tooltip) {
 				tooltip.disable();
 			}
 		} else {
-			$('#bulkGroupChange').addClass('disabled').removeClass('custom-link');
+			$('#bulkGroupChange').addClass('disabled');
 			$('#selectedCount').hide();
 			// Enable tooltip when disabled
 			var tooltip = bootstrap.Tooltip.getInstance($('#bulkGroupChange')[0]);
