@@ -281,8 +281,8 @@ HTML;
 			$("#menuConfig").click();
 			// Wait for content to load, then switch to Advanced Settings tab
 			setTimeout(function() {
-				$("#nav-advanced-tab").click();
-			}, 500);
+				$("#nav-advanced-tab").tab('show');
+			}, 800);
 		});
     });
   </script>
