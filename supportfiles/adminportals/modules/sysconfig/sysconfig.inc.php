@@ -835,4 +835,52 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 			}
 		});
 	});
+	
+	$("#deleteInstallerFiles").click(function(){
+		event.preventDefault();
+		
+		// Confirm before deleting
+		if(!confirm("Are you sure you want to delete the installation files? This action cannot be undone.")){
+			return;
+		}
+		
+		// Disable button and show loading
+		$("#deleteInstallerFiles").prop("disabled", true);
+		$("#installerDeleteStatus").html('<span class="text-info">Deleting files...</span>');
+
+		$.ajax({
+			url: "ajax/getmodule.php",
+			
+			data: {
+				module: $(this).attr('module'),
+				'sub-module': $(this).attr('sub-module'),
+				'module-action': $(this).attr('module-action')
+			},
+			type: "POST",
+			dataType: "text",
+			success: function (data) {
+				if(data == "success"){
+					$("#installerDeleteStatus").html('<span class="text-success"><i data-feather="check-circle"></i> Files deleted successfully!</span>');
+					feather.replace();
+					// Fade out and remove the card after 2 seconds
+					setTimeout(function() {
+						$("#installerFilesCard").fadeOut(500, function() {
+							$(this).remove();
+							// Reload the page to remove the top alert
+							location.reload();
+						});
+					}, 2000);
+				}else{
+					$("#installerDeleteStatus").html('<span class="text-danger"><i data-feather="x-circle"></i> Error deleting files. Please check file permissions.</span>');
+					$("#deleteInstallerFiles").prop("disabled", false);
+					feather.replace();
+				}
+			},
+			error: function() {
+				$("#installerDeleteStatus").html('<span class="text-danger"><i data-feather="x-circle"></i> Error communicating with server.</span>');
+				$("#deleteInstallerFiles").prop("disabled", false);
+				feather.replace();
+			}
+		});
+	});
 </script>

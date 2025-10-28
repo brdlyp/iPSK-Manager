@@ -90,6 +90,35 @@
 		$ipskISEDB->setGlobalSetting("platform-config", "logging-level", $loggingLevel);		
 		
 		print true;
+	}elseif($sanitizedInput['module-action'] == "deleteinstaller"){
+		// Delete installer files
+		$success = true;
+		$installerPhp = "../../adminportal/installer.php";
+		$installerInc = "../../adminportal/installer.inc.php";
+		
+		if(file_exists($installerPhp)){
+			if(!unlink($installerPhp)){
+				$success = false;
+			}
+		}
+		
+		if(file_exists($installerInc)){
+			if(!unlink($installerInc)){
+				$success = false;
+			}
+		}
+		
+		if($success){
+			//LOG::Entry
+			$logMessage = "REQUEST:SUCCESS;ACTION:DELETE-INSTALLER-FILES;";
+			$ipskISEDB->addLogEntry($logMessage, __FILE__, __FUNCTION__, __CLASS__, __METHOD__, __LINE__);
+			print "success";
+		}else{
+			//LOG::Entry
+			$logMessage = "REQUEST:FAILURE;ACTION:DELETE-INSTALLER-FILES;";
+			$ipskISEDB->addLogEntry($logMessage, __FILE__, __FUNCTION__, __CLASS__, __METHOD__, __LINE__);
+			print "error";
+		}
 	}else{
 		print false;
 	}

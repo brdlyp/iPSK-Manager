@@ -71,7 +71,8 @@
 		<div style="z-index: 1090; height: 56px; width: 100%; pointer-events: none;" id="notifiationBar" class="fixed-top row">
 			<div class="col"></div>
 			<div style="pointer-events: auto;" id="notifiationWindow" class="shadow-lg text-center alert alert-danger col-4">
-			<h6><strong>ALERT:  Installation Files are still installed.</strong></h6></div>
+			<h6><strong>ALERT:  Installation Files are still installed.</strong></h6>
+			<a href="#" id="installerAlertLink" class="alert-link">Click here to remove them</a></div>
 			<div class="col"></div>
 		</div>
 HTML;
@@ -272,6 +273,17 @@ HTML;
 			var table = $('#logging-table').DataTable();
 			table.state.clear();
     	});
+		
+		// Handle installer alert link click
+		$("#installerAlertLink").click(function(event) {
+			event.preventDefault();
+			// Click on the Platform Configuration menu item
+			$("#menuConfig").click();
+			// Wait for content to load, then switch to Advanced Settings tab
+			setTimeout(function() {
+				$("#nav-advanced-tab").click();
+			}, 500);
+		});
     });
   </script>
 </html>
