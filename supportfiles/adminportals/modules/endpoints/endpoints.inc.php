@@ -28,7 +28,7 @@
 	if($associationList){
 		if($associationList['count'] > 0){
 
-			$pageData['endpointAssociationList'] .= '<table id="endpoint-table" class="table table-hover"><thead><tr id="endpoint-table-filter"><th scope="col" data-dt-order="disable">MAC Address</th><th scope="col" data-dt-order="disable">iPSK Endpoint Grouping</th><th scope="col" data-dt-order="disable">Expiration Date</th><th scope="col" data-dt-order="disable">Full Name</th><th scope="col" data-dt-order="disable">Email</th><th scope="col" data-dt-order="disable">Description</th><th scope="col">View</th><th scope="col">Actions</th></tr><tr id="endpoint-table-header"><th scope="col">MAC Address</th><th scope="col">iPSK Endpoint Grouping</th><th scope="col">Expiration Date</th><th scope="col">Full Name</th><th scope="col">Email</th><th scope="col">Description</th><th scope="col">View</th><th scope="col">Actions</th></tr></thead><tbody>';
+			$pageData['endpointAssociationList'] .= '<table id="endpoint-table" class="table table-hover"><thead><tr id="endpoint-table-filter"><th scope="col" data-dt-order="disable"><input type="checkbox" id="selectAll" title="Select All"></th><th scope="col" data-dt-order="disable">MAC Address</th><th scope="col" data-dt-order="disable">iPSK Endpoint Grouping</th><th scope="col" data-dt-order="disable">Expiration Date</th><th scope="col" data-dt-order="disable">Full Name</th><th scope="col" data-dt-order="disable">Email</th><th scope="col" data-dt-order="disable">Description</th><th scope="col">View</th><th scope="col">Actions</th></tr><tr id="endpoint-table-header"><th scope="col">Select</th><th scope="col">MAC Address</th><th scope="col">iPSK Endpoint Grouping</th><th scope="col">Expiration Date</th><th scope="col">Full Name</th><th scope="col">Email</th><th scope="col">Description</th><th scope="col">View</th><th scope="col">Actions</th></tr></thead><tbody>';
 			
 			for($idxId = $pageStart; $idxId < $pageEnd; $idxId++) {
 							
@@ -45,6 +45,7 @@
 				}
 
 				$pageData['endpointAssociationList'] .= '<tr>';
+				$pageData['endpointAssociationList'] .= '<td><input type="checkbox" class="endpoint-checkbox" data-id="'.$associationList[$idxId]['id'].'" data-mac="'.$associationList[$idxId]['macAddress'].'"></td>';
 				$pageData['endpointAssociationList'] .= '<td>'.$associationList[$idxId]['macAddress'].'</td>';
 				$pageData['endpointAssociationList'] .= '<td>'.$associationList[$idxId]['groupName'].'</td>';
 				$pageData['endpointAssociationList'] .= '<td>'.$expiration.'</td>';
@@ -79,6 +80,8 @@
 	<div class="card-header">
 		<a id="newEndpoint" module="endpoints" sub-module="add" class="btn btn-primary custom-link text-white" href="#" role="button">Add Endpoint</a>
 		<a id="bulkEndpoint" module="endpoints" sub-module="bulk" class="btn btn-primary custom-link text-white" href="#" role="button">Add Bulk Endpoints</a>
+		<a id="bulkGroupChange" module="endpoints" sub-module="bulkgroupchange" class="btn btn-success custom-link text-white" href="#" role="button" style="display:none;">Bulk Group Change</a>
+		<span id="selectedCount" class="badge bg-info text-dark ms-2" style="display:none;">0 selected</span>
 	</div>
 	<div class="card-body">
 			  <?php print $pageData['endpointAssociationList'];?>
@@ -94,6 +97,34 @@
 	$(function() {	
 		feather.replace()
 	});
+	
+	// Handle Select All checkbox
+	$("#selectAll").on('click', function() {
+		var isChecked = $(this).prop('checked');
+		$('.endpoint-checkbox').prop('checked', isChecked);
+		updateBulkActionButton();
+	});
+	
+	// Handle individual checkbox changes
+	$(document).on('change', '.endpoint-checkbox', function() {
+		updateBulkActionButton();
+		// Update Select All checkbox state
+		var totalCheckboxes = $('.endpoint-checkbox').length;
+		var checkedCheckboxes = $('.endpoint-checkbox:checked').length;
+		$('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+	});
+	
+	// Function to update bulk action button visibility
+	function updateBulkActionButton() {
+		var checkedCount = $('.endpoint-checkbox:checked').length;
+		if (checkedCount > 0) {
+			$('#bulkGroupChange').show();
+			$('#selectedCount').show().text(checkedCount + ' selected');
+		} else {
+			$('#bulkGroupChange').hide();
+			$('#selectedCount').hide();
+		}
+	}
 	
 	$(".epg-tableicons").click(function(event) {
 		$.ajax({
@@ -174,11 +205,15 @@
 		$("#endpoint-table").DataTable({
 			"columnDefs": [
 				{
-            		target: 6,
+            		target: 0,
             		orderable: false
         		},
 				{
             		target: 7,
+            		orderable: false
+        		},
+				{
+            		target: 8,
             		orderable: false
         		},
 				{ responsivePriority: 1, targets: -1 },
@@ -210,9 +245,9 @@
 			tableState = table.state();
 			
 			// Enable all columns
-			table.column(3).visible(true);
 			table.column(4).visible(true);
 			table.column(5).visible(true);
+			table.column(6).visible(true);
 		}
 
 		$("#endpoint-table thead #endpoint-table-filter input").on( 'keyup change', function () {
@@ -225,18 +260,18 @@
 
 		// Hide columns after keyup change event registered
 		if (table.state.loaded() == null) {
-			table.column(3).visible(false);
 			table.column(4).visible(false);
 			table.column(5).visible(false);
+			table.column(6).visible(false);
 		} else {
-			if (!tableState.columns[3].visible) {
-				table.column(3).visible(false)
-			}
 			if (!tableState.columns[4].visible) {
 				table.column(4).visible(false)
 			}
 			if (!tableState.columns[5].visible) {
 				table.column(5).visible(false)
+			}
+			if (!tableState.columns[6].visible) {
+				table.column(6).visible(false)
 			}
 
 		}
