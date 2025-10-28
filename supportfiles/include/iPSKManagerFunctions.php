@@ -30,7 +30,7 @@
  */
 	$maxModuleKeywordLength = 15;
 		
-	$subModuleRegEx = "/^(?:create|new|add|edit|view|delete|enable|disable|extend|modify|update|suspend|activate|groups|updategroups|pass|updatepass|authzprofile|bulk|bulkimport)$/";
+	$subModuleRegEx = "/^(?:create|new|add|edit|view|delete|enable|disable|extend|modify|update|suspend|activate|groups|updategroups|pass|updatepass|authzprofile|bulk|bulkimport|bulkgroupchange|bulkgroupupdate)$/";
 	
 	function ipskSessionHandler(){
 		
@@ -383,6 +383,10 @@
 			'dacl'	=>	array('filter'	=>	FILTER_UNSAFE_RAW,
 								  'flags'	=>	FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_STRIP_BACKTICK
 								  ),
+			'selectedEndpointIds'	=>	array('filter'    => FILTER_VALIDATE_REGEXP,
+								  'flags'     => '' ,
+								  'options'   => array('regexp' => '/^(?:[0-9]+(?:,[0-9]+)*)$/')
+								),
 		);
 		
 		$mysanitizedInputs = filter_input_array(INPUT_POST, $arguments);

@@ -9,7 +9,12 @@ This feature allows administrators to select multiple endpoints from the "Manage
 
 ## Files Modified
 
-### 1. `/supportfiles/adminportals/modules/endpoints/endpoints.inc.php`
+### 1. `/supportfiles/include/iPSKManagerFunctions.php`
+**Changes:**
+- Updated `$subModuleRegEx` to include `bulkgroupchange` and `bulkgroupupdate` in the whitelist of allowed sub-modules
+- Added `selectedEndpointIds` parameter to the input sanitization array to validate comma-separated endpoint IDs
+
+### 2. `/supportfiles/adminportals/modules/endpoints/endpoints.inc.php`
 **Changes:**
 - Added checkbox column to the endpoints table for selecting multiple endpoints
 - Added "Select All" checkbox in the table header
@@ -22,7 +27,7 @@ This feature allows administrators to select multiple endpoints from the "Manage
   - Updating selected count badge
 - Updated DataTables column definitions to accommodate the new checkbox column
 
-### 2. `/supportfiles/adminportals/modules/endpoints/bulkgroupchange.inc.php` (NEW)
+### 3. `/supportfiles/adminportals/modules/endpoints/bulkgroupchange.inc.php` (NEW)
 **Purpose:** Modal dialog for bulk endpoint group changes
 
 **Features:**
@@ -34,7 +39,7 @@ This feature allows administrators to select multiple endpoints from the "Manage
 - Validates that an endpoint group is selected
 - Passes selected endpoint IDs to the processing module
 
-### 3. `/supportfiles/adminportals/modules/endpoints/bulkgroupupdate.inc.php` (NEW)
+### 4. `/supportfiles/adminportals/modules/endpoints/bulkgroupupdate.inc.php` (NEW)
 **Purpose:** Backend processing for bulk endpoint group changes
 
 **Features:**
