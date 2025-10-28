@@ -20,15 +20,21 @@ Added a new checkbox option in the Authorization Template edit form that allows 
 - Updated the warning message to include expiration dates
 - Added the new checkbox value to the AJAX request data
 
-#### 2. Backend Logic - `/supportfiles/adminportals/modules/authz/update.inc.php`
+#### 2. Input Sanitization - `/supportfiles/include/iPSKManagerFunctions.php`
+
+- Added `fullAuthZUpdateExpiration` parameter to the `sanitizeGetModuleInput()` function
+- Registered it with `FILTER_VALIDATE_BOOLEAN` to properly handle checkbox values
+- **This was critical** - without this registration, the parameter was being filtered out before reaching the update logic
+
+#### 3. Backend Logic - `/supportfiles/adminportals/modules/authz/update.inc.php`
 
 - Added logic to handle the new `fullAuthZUpdateExpiration` parameter
 - When this option is selected, the system:
-  - Retrieves all endpoints associated with the authorization template
+  - Retrieves all endpoints associated with the authorization template via `getEndpointsByAuthZPolicy()`
   - Calculates the new expiration date based on the template's term length:
     - If term length is 0: Sets expiration to 0 (no expiration)
     - Otherwise: Sets expiration to current time + term length
-  - Updates each endpoint's expiration date using the existing `extendEndpoint` function
+  - Updates each endpoint's expiration date using the existing `extendEndpoint()` function
   - Also resets the `accountExpired` flag to 'False' for each endpoint
 
 ## How to Use
@@ -63,5 +69,15 @@ All endpoints associated with this template will now have their expiration dates
 
 - `/supportfiles/adminportals/modules/authz/edit.inc.php` - Authorization Template edit form
 - `/supportfiles/adminportals/modules/authz/update.inc.php` - Authorization Template update logic
+- `/supportfiles/include/iPSKManagerFunctions.php` - Input sanitization (critical for parameter registration)
 - `/supportfiles/include/iPSKManagerDatabase.php` - Database functions (uses existing `extendEndpoint` function)
+
+## Troubleshooting
+
+If the expiration dates still don't update after checking the box:
+
+1. **Check browser console** - Ensure the AJAX request includes `fullAuthZUpdateExpiration: "1"` when the checkbox is checked
+2. **Verify the checkbox change event fires** - The value should change from empty string to "1" when checked
+3. **Check server logs** - The parameter should appear in the sanitized input
+4. **Navigate to Endpoints view** - After updating the template, go to the Managed iPSK Endpoints page to see the updated expiration dates
 

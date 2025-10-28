@@ -330,6 +330,7 @@
 			'mntVerifySsl'	=>	FILTER_VALIDATE_BOOLEAN,
 			'fullAuthZUpdate'	=>	FILTER_VALIDATE_BOOLEAN,
 			'fullAuthZUpdateVLANdACL'	=>	FILTER_VALIDATE_BOOLEAN,
+			'fullAuthZUpdateExpiration'	=>	FILTER_VALIDATE_BOOLEAN,
 			'adminPortalHostname'	=>	array('filter'	=>	FILTER_UNSAFE_RAW,
 								  'flags'	=>	FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_STRIP_BACKTICK
 								  ),
