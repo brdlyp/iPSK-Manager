@@ -27,8 +27,9 @@
 	
 	$pageSize = (isset($_GET['pageSize'])) ? $_GET['pageSize'] : 25;
 	$currentPage = (isset($_GET['currentPage'])) ? $_GET['currentPage'] : 1;
+	$macFilter = (isset($_GET['macFilter'])) ? trim($_GET['macFilter']) : '';
 	
-	$associationList = $ipskISEDB->getEndPointAssociations();
+	$associationList = $ipskISEDB->getEndPointAssociations($macFilter);
 		
 	if($associationList){
 		if($associationList['count'] > 0){
@@ -81,7 +82,7 @@
 				$pageData['pageinationOutput'] .= '<a class="action-pageicons mx-1" module="endpoints" page="'.$totalPages.'" href="#"><span data-feather="chevrons-right"></span></a>';
 			}
 			
-			$pageData['endpointAssociationList'] .= '<table class="table table-hover"><thead><tr><th scope="col">MAC Address</th><th scope="col">iPSK Endpoint Grouping</th><th scope="col">Expiration Date</th><th scope="col">View</th><th scope="col">Actions</th></tr></thead><tbody>';
+			$pageData['endpointAssociationList'] .= '<table id="endpointsTable" class="table table-hover"><thead><tr><th scope="col">MAC Address</th><th scope="col">iPSK Endpoint Grouping</th><th scope="col">Expiration Date</th><th scope="col">View</th><th scope="col">Actions</th></tr></thead><tbody>';
 			
 			for($idxId = $pageStart; $idxId < $pageEnd; $idxId++) {
 							
@@ -142,6 +143,32 @@
 		<hr>
 	</div>
 </div>
+<div class="row">
+	<div class="col-4">
+		<label class="font-weight-bold" for="macFilterInput">Filter by MAC Address:</label>
+		<div class="input-group">
+			<input type="text" id="macFilterInput" class="form-control" placeholder="Enter MAC address..." value="<?php echo htmlspecialchars($macFilter); ?>" />
+			<div class="input-group-append">
+				<button class="btn btn-primary" type="button" id="applyFilter">Search</button>
+				<?php if(!empty($macFilter)): ?>
+				<button class="btn btn-secondary" type="button" id="clearFilter">Clear</button>
+				<?php endif; ?>
+			</div>
+		</div>
+	</div>
+	<div class="col-8">
+		<?php if(!empty($macFilter)): ?>
+		<div class="alert alert-info mt-4" role="alert">
+			Filtering by: <strong><?php echo htmlspecialchars($macFilter); ?></strong>
+		</div>
+		<?php endif; ?>
+	</div>
+</div>
+<div class="row">
+	<div class="col">
+		<hr>
+	</div>
+</div>
 <div class="overflow-auto"><?php print $pageData['endpointAssociationList'];?></div>
 <div class="row">
 	<div class="col"><hr></div>
@@ -163,9 +190,14 @@
 	});
 	
 	$(".action-pageicons").click(function(event) {
+		var macFilterValue = $("#macFilterInput").val();
+		var urlParams = "pageSize=" + $("#pageSize").val() + "&currentPage=" + $(this).attr("page");
+		if(macFilterValue) {
+			urlParams += "&macFilter=" + encodeURIComponent(macFilterValue);
+		}
 		
 		$.ajax({
-			url: "ajax/getmodule.php?pageSize=" + $("#pageSize").val() + "&currentPage=" + $(this).attr("page"),
+			url: "ajax/getmodule.php?" + urlParams,
 			
 			data: {
 				module: $(this).attr('module')
@@ -185,9 +217,14 @@
 	});
 	
 	$("#pageSize").change(function() {
+		var macFilterValue = $("#macFilterInput").val();
+		var urlParams = "pageSize=" + $(this).val();
+		if(macFilterValue) {
+			urlParams += "&macFilter=" + encodeURIComponent(macFilterValue);
+		}
 		
 		$.ajax({
-			url: "ajax/getmodule.php?pageSize=" + $(this).val(),
+			url: "ajax/getmodule.php?" + urlParams,
 			
 			data: {
 				module: $(this).attr('module')
@@ -265,5 +302,57 @@
 		});
 		
 		event.preventDefault();
+	});
+	
+	// Apply MAC Address Filter
+	$("#applyFilter").click(function() {
+		var macFilterValue = $("#macFilterInput").val();
+		var urlParams = "pageSize=" + $("#pageSize").val();
+		if(macFilterValue) {
+			urlParams += "&macFilter=" + encodeURIComponent(macFilterValue);
+		}
+		
+		$.ajax({
+			url: "ajax/getmodule.php?" + urlParams,
+			
+			data: {
+				module: "endpoints"
+			},
+			type: "POST",
+			dataType: "html",
+			success: function (data) {
+				$('#mainContent').html(data);
+			},
+			error: function (xhr, status) {
+				$('#mainContent').html("<h6 class=\"text-center\"><span class=\"text-danger\">Error Loading Selection:</span>  Verify the installation/configuration and/or contact your system administrator!</h6>");
+			}
+		});
+	});
+	
+	// Clear MAC Address Filter
+	$("#clearFilter").click(function() {
+		$.ajax({
+			url: "ajax/getmodule.php?pageSize=" + $("#pageSize").val(),
+			
+			data: {
+				module: "endpoints"
+			},
+			type: "POST",
+			dataType: "html",
+			success: function (data) {
+				$('#mainContent').html(data);
+			},
+			error: function (xhr, status) {
+				$('#mainContent').html("<h6 class=\"text-center\"><span class=\"text-danger\">Error Loading Selection:</span>  Verify the installation/configuration and/or contact your system administrator!</h6>");
+			}
+		});
+	});
+	
+	// Allow Enter key to trigger search
+	$("#macFilterInput").keypress(function(event) {
+		if(event.which == 13) {
+			$("#applyFilter").click();
+			event.preventDefault();
+		}
 	});
 </script>

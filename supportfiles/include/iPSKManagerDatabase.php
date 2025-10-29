@@ -1092,39 +1092,47 @@
 				
 		}
 		
-		function getEndPointAssociations(){
-			$query = "SELECT endpointAssociations.id, endpointAssociations.endpointId, endpointAssociations.epGroupId, endpoints.macAddress, endpoints.createdBy, endpointGroups.groupName as epGroupName, endpoints.accountEnabled, endpoints.expirationDate, endpointAssociations.createdDate FROM endpointAssociations INNER JOIN endpointGroups ON endpointGroups.id = endpointAssociations.epGroupId INNER JOIN endpoints ON endpoints.id = endpointAssociations.endpointId ORDER BY endpoints.macAddress ASC";
-			
-			$queryResult = $this->dbConnection->query($query);
-			
-			if($queryResult){
-				if($queryResult->num_rows > 0){
-					$listCount = 0;
+	function getEndPointAssociations($macFilter = ''){
+		$query = "SELECT endpointAssociations.id, endpointAssociations.endpointId, endpointAssociations.epGroupId, endpoints.macAddress, endpoints.createdBy, endpointGroups.groupName as epGroupName, endpoints.accountEnabled, endpoints.expirationDate, endpointAssociations.createdDate FROM endpointAssociations INNER JOIN endpointGroups ON endpointGroups.id = endpointAssociations.epGroupId INNER JOIN endpoints ON endpoints.id = endpointAssociations.endpointId";
+		
+		// Add MAC address filter if provided
+		if(!empty($macFilter)){
+			$macFilter = $this->dbConnection->real_escape_string($macFilter);
+			$query .= " WHERE endpoints.macAddress LIKE '%".$macFilter."%'";
+		}
+		
+		$query .= " ORDER BY endpoints.macAddress ASC";
+		
+		$queryResult = $this->dbConnection->query($query);
+		
+		if($queryResult){
+			if($queryResult->num_rows > 0){
+				$listCount = 0;
+				
+				while($row = $queryResult->fetch_assoc()){
+					$rawAssociationList[$listCount]['id'] = $row['id'];
+					$rawAssociationList[$listCount]['endpointId'] = $row['endpointId'];
+					$rawAssociationList[$listCount]['epGroupId'] = $row['epGroupId'];
+					$rawAssociationList[$listCount]['macAddress'] = $row['macAddress'];
+					$rawAssociationList[$listCount]['createdBy'] = $row['createdBy'];
+					$rawAssociationList[$listCount]['expirationDate'] = $row['expirationDate'];
+					$rawAssociationList[$listCount]['accountEnabled'] = $row['accountEnabled'];
+					$rawAssociationList[$listCount]['createdDate'] = $row['createdDate'];
+					$rawAssociationList[$listCount]['groupName'] = $row['epGroupName'];
 					
-					while($row = $queryResult->fetch_assoc()){
-						$rawAssociationList[$listCount]['id'] = $row['id'];
-						$rawAssociationList[$listCount]['endpointId'] = $row['endpointId'];
-						$rawAssociationList[$listCount]['epGroupId'] = $row['epGroupId'];
-						$rawAssociationList[$listCount]['macAddress'] = $row['macAddress'];
-						$rawAssociationList[$listCount]['createdBy'] = $row['createdBy'];
-						$rawAssociationList[$listCount]['expirationDate'] = $row['expirationDate'];
-						$rawAssociationList[$listCount]['accountEnabled'] = $row['accountEnabled'];
-						$rawAssociationList[$listCount]['createdDate'] = $row['createdDate'];
-						$rawAssociationList[$listCount]['groupName'] = $row['epGroupName'];
-						
-						$listCount++;
-					}
-					
-					$rawAssociationList['count'] = $listCount;					
-					
-					return $rawAssociationList;
-				}else{
-					return false;
+					$listCount++;
 				}
+				
+				$rawAssociationList['count'] = $listCount;					
+				
+				return $rawAssociationList;
 			}else{
 				return false;
 			}
+		}else{
+			return false;
 		}
+	}
 		
 		function getEndPointAuthorizationPolicy($associationId){
 			$query = "SELECT endpointAssociations.id, endpointAssociations.endpointId, endpointAssociations.epGroupId, authorizationTemplates.pskLength FROM endpointAssociations INNER JOIN endpointGroups ON endpointAssociations.epGroupId = endpointGroups.id INNER JOIN authorizationTemplates ON authorizationTemplates.id = endpointGroups.authzTemplateId INNER JOIN endpoints  ON endpointAssociations.endpointId = endpoints.id WHERE endpointAssociations.id = '$associationId' LIMIT 1";
