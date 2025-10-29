@@ -147,7 +147,7 @@
 	<div class="col-4">
 		<label class="font-weight-bold" for="macFilterInput">Filter by MAC Address:</label>
 		<div class="input-group">
-			<input type="text" id="macFilterInput" class="form-control" placeholder="Enter MAC address..." value="<?php echo htmlspecialchars($macFilter); ?>" />
+			<input type="text" id="macFilterInput" class="form-control" placeholder="Enter MAC address(es), comma-separated..." value="<?php echo htmlspecialchars($macFilter); ?>" />
 			<div class="input-group-append">
 				<button class="btn btn-primary" type="button" id="applyFilter">Search</button>
 				<?php if(!empty($macFilter)): ?>

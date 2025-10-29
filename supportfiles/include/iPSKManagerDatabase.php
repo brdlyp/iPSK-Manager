@@ -1097,8 +1097,20 @@
 		
 		// Add MAC address filter if provided
 		if(!empty($macFilter)){
-			$macFilter = $this->dbConnection->real_escape_string($macFilter);
-			$query .= " WHERE endpoints.macAddress LIKE '%".$macFilter."%'";
+			// Support multiple MAC addresses separated by commas
+			$macAddresses = array_map('trim', explode(',', $macFilter));
+			$conditions = array();
+			
+			foreach($macAddresses as $mac){
+				if(!empty($mac)){
+					$escapedMac = $this->dbConnection->real_escape_string($mac);
+					$conditions[] = "endpoints.macAddress LIKE '%".$escapedMac."%'";
+				}
+			}
+			
+			if(!empty($conditions)){
+				$query .= " WHERE (".implode(' OR ', $conditions).")";
+			}
 		}
 		
 		$query .= " ORDER BY endpoints.macAddress ASC";
